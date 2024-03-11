@@ -476,25 +476,27 @@ const { log } = require("console");
 
 
 function solveTestCase(test) {
-    const [firstPlay1, firstPlay2] = test[0].split(':').map(Number);
-    const [secondPlay1, secondPlay2] = test[1].split(':').map(Number);
-    const [isFirstTeamAtHome] = test[2].split('').map(Number);
-
-
-    const secondTeamScore = firstPlay2 + secondPlay2;
-    const firstTeamScore = firstPlay1 + secondPlay1;
 
 
     // ты определил параметры для счета, но используешь переменные из внешнего скоупа, это не ок. 
     // она должна принимать на вход все нужные для разбора данные, в твоем случае - два массива со счетом команд и признак, что первая команда на выезде.
     // в идеале все сразу привести в правильный вид, числа распарсить в number а firstGameAtHome превратить в boolean, это упростит все условия
     // разыменование const [firstPlay1, firstPlay2] = first уже можно сделать в функции;
-    function calculateGoals(firstTeamScore, secondTeamScore, isFirstTeamAtHome) {
+    function calculateGoals(play1, play2, homePlayOrder) {
+
+        const [firstPlay1, firstPlay2] = play1.split(':').map(Number);
+        const [secondPlay1, secondPlay2] = play2.split(':').map(Number);
+
+        const secondTeamScore = firstPlay2 + secondPlay2;
+        const firstTeamScore = firstPlay1 + secondPlay1;
+
+        let isFirstTeamAtHome = homePlayOrder[0] === 1 ? true : false;
 
         let firstTeamGuestsScore;
         let secondTeamGuestsScore;
+        const scoreDiff = secondTeamScore - firstTeamScore;
 
-        if (isFirstTeamAtHome !== 1) {
+        if (!isFirstTeamAtHome) {
             firstTeamGuestsScore = firstPlay1;
             secondTeamGuestsScore = secondPlay2;
         } else {
@@ -502,18 +504,20 @@ function solveTestCase(test) {
             secondTeamGuestsScore = firstPlay2;
         }
 
-        if (firstTeamScore > secondTeamScore) {
-            return (0).toString(); // Зачем везде toString?
+        const guestsDiff = firstTeamGuestsScore - secondTeamGuestsScore;
+
+        if (scoreDiff < 0) {
+            return (0); // Зачем везде toString? => Это потому-что яндекс хочет ответ строкой, но я переделал все равно аккуратнее.
         }
 
-        if (firstTeamScore === 0 && secondTeamScore === 0) { // это условие явно лишнее, этот кейс должен автоматом разгребаться 
-            return (1).toString();
+        if (firstTeamScore === 0 && secondTeamScore === 0) { // это условие явно лишнее, этот кейс должен автоматом разгребаться => не понимаю как, долго пытался
+            return (1);
 
-        } else if (firstTeamScore === secondTeamScore) { // это тоже не до конца понятно зачем лишнее
-            if (firstTeamGuestsScore > secondTeamGuestsScore) {
-                return (0).toString();
+        } else if (scoreDiff === 0) { // это тоже не до конца понятно зачем лишнее
+            if (guestsDiff > 0) {
+                return (0);
             } else {
-                return (1).toString();
+                return (1);
             }
         }
 
@@ -522,36 +526,35 @@ function solveTestCase(test) {
         // например:
         // const guestsDiff = firstTeamGuestsScore - secondTeamGuestsScore
         // if( guestsDiff <= 0)
-        if (firstTeamGuestsScore < secondTeamGuestsScore) {
-            if (isFirstTeamAtHome === 1 && firstTeamGuestsScore + (secondTeamScore - firstTeamScore) > secondTeamGuestsScore) {
-                return (secondTeamScore - firstTeamScore).toString();
+        if (guestsDiff < 0) {
+            if (isFirstTeamAtHome && firstTeamGuestsScore + scoreDiff > secondTeamGuestsScore) {
+                return (scoreDiff);
             }
-            else if (isFirstTeamAtHome === 2 && firstTeamGuestsScore + (secondTeamScore - firstTeamScore) > secondTeamGuestsScore) {
-                return (secondTeamScore - firstTeamScore + 1).toString();
+            else if (!isFirstTeamAtHome && firstTeamGuestsScore + scoreDiff > secondTeamGuestsScore) {
+                return (scoreDiff + 1);
 
             }
             else {
-                return (secondTeamScore - firstTeamScore + 1).toString();
+                return (scoreDiff + 1);
             }
-        } else if (secondTeamGuestsScore === firstTeamGuestsScore) {
-            if (isFirstTeamAtHome !== 1) {
-                return (secondTeamScore - firstTeamScore + 1).toString();
+        } else if (guestsDiff === 0) {
+            if (!isFirstTeamAtHome) {
+                return (scoreDiff + 1);
             }
 
             else {
-                return (secondTeamScore - firstTeamScore).toString();
+                return scoreDiff;
             }
         }
-        else if (firstTeamGuestsScore > secondTeamGuestsScore) {
-                return (secondTeamScore - firstTeamScore).toString();
+        else if (guestsDiff > 0) {
+            return scoreDiff;
 
         }
 
     }
-    // что делает этот return?
-    return console.log(calculateGoals(firstTeamScore, secondTeamScore, isFirstTeamAtHome));
+    // что делает этот return? => возвращает яндексу результат выполнения функции calculateGoals
+    return console.log(calculateGoals(test[0], test[1], test[2].split('').map(Number)).toString());
 }
-
 
 
 solveTestCase(['0 : 0', '0 : 0', '1']); // 1
