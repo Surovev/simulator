@@ -1,0 +1,7 @@
+@import url(cards/__description/cards__description.css);
+@import url(cards/__title/cards__title.css);
+
+.technics {
+    margin-top: 100px;
+    margin-bottom: 100px;
+}
