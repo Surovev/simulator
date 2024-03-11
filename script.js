@@ -477,20 +477,22 @@ const { log } = require("console");
 
 function solveTestCase(test) {
 
+    const firstPlay = test[0].split(':').map(Number);
+    const secondPlay = test[1].split(':').map(Number);
+    const homePlayOrder = Number(test[2]) === 1;
+
 
     // ты определил параметры для счета, но используешь переменные из внешнего скоупа, это не ок. 
     // она должна принимать на вход все нужные для разбора данные, в твоем случае - два массива со счетом команд и признак, что первая команда на выезде.
     // в идеале все сразу привести в правильный вид, числа распарсить в number а firstGameAtHome превратить в boolean, это упростит все условия
     // разыменование const [firstPlay1, firstPlay2] = first уже можно сделать в функции;
-    function calculateGoals(play1, play2, homePlayOrder) {
+    function calculateGoals(play1, play2, isFirstTeamAtHome) {
 
-        const [firstPlay1, firstPlay2] = play1.split(':').map(Number);
-        const [secondPlay1, secondPlay2] = play2.split(':').map(Number);
+        const [firstPlay1, firstPlay2] = play1;
+        const [secondPlay1, secondPlay2] = play2;
 
         const secondTeamScore = firstPlay2 + secondPlay2;
         const firstTeamScore = firstPlay1 + secondPlay1;
-
-        let isFirstTeamAtHome = homePlayOrder[0] === 1 ? true : false;
 
         let firstTeamGuestsScore;
         let secondTeamGuestsScore;
@@ -507,39 +509,34 @@ function solveTestCase(test) {
         const guestsDiff = firstTeamGuestsScore - secondTeamGuestsScore;
 
         if (scoreDiff < 0) {
-            return (0); // Зачем везде toString? => Это потому-что яндекс хочет ответ строкой, но я переделал все равно аккуратнее.
+            return 0; // Зачем везде toString? => Это потому-что яндекс хочет ответ строкой, но я переделал все равно аккуратнее.
         }
 
         if (firstTeamScore === 0 && secondTeamScore === 0) { // это условие явно лишнее, этот кейс должен автоматом разгребаться => не понимаю как, долго пытался
-            return (1);
+            return 1;
 
         } else if (scoreDiff === 0) { // это тоже не до конца понятно зачем лишнее
             if (guestsDiff > 0) {
-                return (0);
+                return 0;
             } else {
-                return (1);
+                return 1;
             }
         }
 
-        // выражение (secondTeamScore - firstTeamScore) используется 8 (!!!) раз, явно очень просится переменная.
-        // вместо сравнений чисел через ===, < > иногда намного удобнее положить разницу в переменную и сравнивать переменную, условия и логика может заметно упроститься.
-        // например:
-        // const guestsDiff = firstTeamGuestsScore - secondTeamGuestsScore
-        // if( guestsDiff <= 0)
         if (guestsDiff < 0) {
             if (isFirstTeamAtHome && firstTeamGuestsScore + scoreDiff > secondTeamGuestsScore) {
-                return (scoreDiff);
+                return scoreDiff;
             }
             else if (!isFirstTeamAtHome && firstTeamGuestsScore + scoreDiff > secondTeamGuestsScore) {
-                return (scoreDiff + 1);
+                return scoreDiff + 1;
 
             }
             else {
-                return (scoreDiff + 1);
+                return scoreDiff + 1;
             }
         } else if (guestsDiff === 0) {
             if (!isFirstTeamAtHome) {
-                return (scoreDiff + 1);
+                return scoreDiff + 1;
             }
 
             else {
@@ -553,9 +550,9 @@ function solveTestCase(test) {
 
     }
     // что делает этот return? => возвращает яндексу результат выполнения функции calculateGoals
-    return console.log(calculateGoals(test[0], test[1], test[2].split('').map(Number)).toString());
-}
+    console.log(calculateGoals(firstPlay, secondPlay, homePlayOrder));
 
+}
 
 solveTestCase(['0 : 0', '0 : 0', '1']); // 1
 solveTestCase(['0 : 2', // 5
