@@ -475,96 +475,156 @@ const { log } = require("console");
 // -13 + 11   -9 + 25
 
 
-function solveTestCase(test) {
-    const [firstPlay1, firstPlay2] = test[0].split(':').map(Number);
-    const [secondPlay1, secondPlay2] = test[1].split(':').map(Number);
-    const [isFirstTeamAtHome] = test[2].split('').map(Number);
+// function solveTestCase(test) {
+//     const [firstPlay1, firstPlay2] = test[0].split(':').map(Number);
+//     const [secondPlay1, secondPlay2] = test[1].split(':').map(Number);
+//     const [isFirstTeamAtHome] = test[2].split('').map(Number);
 
 
-    const secondTeamScore = firstPlay2 + secondPlay2;
-    const firstTeamScore = firstPlay1 + secondPlay1;
+//     const secondTeamScore = firstPlay2 + secondPlay2;
+//     const firstTeamScore = firstPlay1 + secondPlay1;
 
 
-    // ты определил параметры для счета, но используешь переменные из внешнего скоупа, это не ок. 
-    // она должна принимать на вход все нужные для разбора данные, в твоем случае - два массива со счетом команд и признак, что первая команда на выезде.
-    // в идеале все сразу привести в правильный вид, числа распарсить в number а firstGameAtHome превратить в boolean, это упростит все условия
-    // разыменование const [firstPlay1, firstPlay2] = first уже можно сделать в функции;
-    function calculateGoals(firstTeamScore, secondTeamScore, isFirstTeamAtHome) {
+//     // ты определил параметры для счета, но используешь переменные из внешнего скоупа, это не ок. 
+//     // она должна принимать на вход все нужные для разбора данные, в твоем случае - два массива со счетом команд и признак, что первая команда на выезде.
+//     // в идеале все сразу привести в правильный вид, числа распарсить в number а firstGameAtHome превратить в boolean, это упростит все условия
+//     // разыменование const [firstPlay1, firstPlay2] = first уже можно сделать в функции;
+//     function calculateGoals(firstTeamScore, secondTeamScore, isFirstTeamAtHome) {
 
-        let firstTeamGuestsScore;
-        let secondTeamGuestsScore;
+//         let firstTeamGuestsScore;
+//         let secondTeamGuestsScore;
 
-        if (isFirstTeamAtHome !== 1) {
-            firstTeamGuestsScore = firstPlay1;
-            secondTeamGuestsScore = secondPlay2;
-        } else {
-            firstTeamGuestsScore = secondPlay1;
-            secondTeamGuestsScore = firstPlay2;
-        }
+//         if (isFirstTeamAtHome !== 1) {
+//             firstTeamGuestsScore = firstPlay1;
+//             secondTeamGuestsScore = secondPlay2;
+//         } else {
+//             firstTeamGuestsScore = secondPlay1;
+//             secondTeamGuestsScore = firstPlay2;
+//         }
 
-        if (firstTeamScore > secondTeamScore) {
-            return (0).toString(); // Зачем везде toString?
-        }
+//         if (firstTeamScore > secondTeamScore) {
+//             return (0).toString(); // Зачем везде toString?
+//         }
 
-        if (firstTeamScore === 0 && secondTeamScore === 0) { // это условие явно лишнее, этот кейс должен автоматом разгребаться 
-            return (1).toString();
+//         if (firstTeamScore === 0 && secondTeamScore === 0) { // это условие явно лишнее, этот кейс должен автоматом разгребаться 
+//             return (1).toString();
 
-        } else if (firstTeamScore === secondTeamScore) { // это тоже не до конца понятно зачем лишнее
-            if (firstTeamGuestsScore > secondTeamGuestsScore) {
-                return (0).toString();
-            } else {
-                return (1).toString();
-            }
-        }
+//         } else if (firstTeamScore === secondTeamScore) { // это тоже не до конца понятно зачем лишнее
+//             if (firstTeamGuestsScore > secondTeamGuestsScore) {
+//                 return (0).toString();
+//             } else {
+//                 return (1).toString();
+//             }
+//         }
 
-        // выражение (secondTeamScore - firstTeamScore) используется 8 (!!!) раз, явно очень просится переменная.
-        // вместо сравнений чисел через ===, < > иногда намного удобнее положить разницу в переменную и сравнивать переменную, условия и логика может заметно упроститься.
-        // например:
-        // const guestsDiff = firstTeamGuestsScore - secondTeamGuestsScore
-        // if( guestsDiff <= 0)
-        if (firstTeamGuestsScore < secondTeamGuestsScore) {
-            if (isFirstTeamAtHome === 1 && firstTeamGuestsScore + (secondTeamScore - firstTeamScore) > secondTeamGuestsScore) {
-                return (secondTeamScore - firstTeamScore).toString();
-            }
-            else if (isFirstTeamAtHome === 2 && firstTeamGuestsScore + (secondTeamScore - firstTeamScore) > secondTeamGuestsScore) {
-                return (secondTeamScore - firstTeamScore + 1).toString();
+//         // выражение (secondTeamScore - firstTeamScore) используется 8 (!!!) раз, явно очень просится переменная.
+//         // вместо сравнений чисел через ===, < > иногда намного удобнее положить разницу в переменную и сравнивать переменную, условия и логика может заметно упроститься.
+//         // например:
+//         // const guestsDiff = firstTeamGuestsScore - secondTeamGuestsScore
+//         // if( guestsDiff <= 0)
+//         if (firstTeamGuestsScore < secondTeamGuestsScore) {
+//             if (isFirstTeamAtHome === 1 && firstTeamGuestsScore + (secondTeamScore - firstTeamScore) > secondTeamGuestsScore) {
+//                 return (secondTeamScore - firstTeamScore).toString();
+//             }
+//             else if (isFirstTeamAtHome === 2 && firstTeamGuestsScore + (secondTeamScore - firstTeamScore) > secondTeamGuestsScore) {
+//                 return (secondTeamScore - firstTeamScore + 1).toString();
 
-            }
-            else {
-                return (secondTeamScore - firstTeamScore + 1).toString();
-            }
-        } else if (secondTeamGuestsScore === firstTeamGuestsScore) {
-            if (isFirstTeamAtHome !== 1) {
-                return (secondTeamScore - firstTeamScore + 1).toString();
-            }
+//             }
+//             else {
+//                 return (secondTeamScore - firstTeamScore + 1).toString();
+//             }
+//         } else if (secondTeamGuestsScore === firstTeamGuestsScore) {
+//             if (isFirstTeamAtHome !== 1) {
+//                 return (secondTeamScore - firstTeamScore + 1).toString();
+//             }
 
-            else {
-                return (secondTeamScore - firstTeamScore).toString();
-            }
-        }
-        else if (firstTeamGuestsScore > secondTeamGuestsScore) {
-                return (secondTeamScore - firstTeamScore).toString();
+//             else {
+//                 return (secondTeamScore - firstTeamScore).toString();
+//             }
+//         }
+//         else if (firstTeamGuestsScore > secondTeamGuestsScore) {
+//                 return (secondTeamScore - firstTeamScore).toString();
 
-        }
+//         }
 
-    }
-    // что делает этот return?
-    return console.log(calculateGoals(firstTeamScore, secondTeamScore, isFirstTeamAtHome));
+//     }
+//     // что делает этот return?
+//     return console.log(calculateGoals(firstTeamScore, secondTeamScore, isFirstTeamAtHome));
+// }
+
+
+
+// solveTestCase(['0 : 0', '0 : 0', '1']); // 1
+// solveTestCase(['0 : 2', // 5
+//     '0 : 3',
+//     '1']);
+// solveTestCase(['0 : 5', // 6
+//     '5 : 5',
+//     '2']);
+// solveTestCase(['4 : 5', // 
+//     '2 : 4',
+//     '2']);
+// solveTestCase(['4 : 3', // 
+//     '0 : 3',
+//     '2']);
+
+function runningSum(arr) {
+    let result = [];
+    let acc = 0;
+
+    arr.forEach((item) => {
+        acc = acc + item;
+        result.push(acc);
+    })
+    return result;
 }
 
+// console.log(runningSum([1, 2, 3, 4]));
+// Output: [1,3,6,10]
+
+// console.log(runningSum([1, 1, 1, 1, 1]));
+// Output: [1,2,3,4,5]
+
+// console.log(runningSum([3, 1, 2, 10, 1]));
+// Output: [3,4,6,16,17]
 
 
-solveTestCase(['0 : 0', '0 : 0', '1']); // 1
-solveTestCase(['0 : 2', // 5
-    '0 : 3',
-    '1']);
-solveTestCase(['0 : 5', // 6
-    '5 : 5',
-    '2']);
-solveTestCase(['4 : 5', // 
-    '2 : 4',
-    '2']);
-solveTestCase(['4 : 3', // 
-    '0 : 3',
-    '2']);
+function getConcentration(arr) {
+    let result = [];
+    arr.forEach((item, i) => {
+        result[i] = arr[i];
+        result[i + arr.length] = arr[i];
+    })
+
+    return result;
+}
+
+// console.log(getConcentration([1, 2, 3, 4]));
+
+// console.log(getConcentration([1, 2, 3, 4, 5, 7]));
+
+
+
+function getLongestPref(strs) {
+    let res = [];
+
+    let i = 0;
+    while (i < strs[0].length) {
+        if (strs.every((str) => {
+
+            return str[i] === strs[0][i];
+        })) {
+            res.push(strs[0][i])
+        } else {
+            return res.join('');
+        }
+        i++;
+    }
+
+    return res.join('');
+
+}
+
+console.log(getLongestPref(["flower", "flow", "flight"]));
+console.log(getLongestPref(["dog", "racecar", "car"]));
 
